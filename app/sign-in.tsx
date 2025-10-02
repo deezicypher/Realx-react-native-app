@@ -1,14 +1,53 @@
-import { google, onboarding } from '@/constants/images'
-import React from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { google, onboarding } from '@/constants/images';
+import { instance } from '@/services/api';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect } from 'react';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SafeAreaView } from 'react-native-safe-area-context'
+WebBrowser.maybeCompleteAuthSession()
 
 const Signin = () => {
 
-  const handleLogin = () => {
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+  });
 
-  }
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        sendTokenToApi(authentication.accessToken);
+      }
+      console.log("✅ Logged in!", authentication?.accessToken);
+    }
+    if (response?.type === "error") {
+      console.log("Auth error:", response.error);
+      Alert.alert('Authentication Error', response.error?.toString() || 'Unknown error occurred');
+    }
+    if (response?.type === "cancel") {
+      console.log("Auth cancelled by user");
+    }
+  }, [response]);
+
+  const sendTokenToApi = async (accessToken: string) => {
+    try {
+      const res = await instance.post('google/signup', {
+        access_token: accessToken,
+      });
+
+      const user = res.data.user;
+      Alert.alert('Welcome', `${user.name} (${user.email})`);
+      // Store user/token, navigate, etc.
+    } catch (err) {
+      console.error('API Error:', err);
+      Alert.alert('Login failed', 'Could not log in with Google');
+    }
+  };
+ 
 
   return (
     <SafeAreaView className='bg-white h-full'>
@@ -25,7 +64,7 @@ const Signin = () => {
               Login to Realx with Google
             </Text>
 
-            <TouchableOpacity onPress={handleLogin} className='bg-white shadow-md shadow-zinc-300 rounded-full w-full py-4 mt-5'>
+            <TouchableOpacity disabled={!request} onPress={() => promptAsync()}  className='bg-white shadow-md shadow-zinc-300 mb-5 rounded-full w-full py-4 mt-5'>
                 <View className='flex flex-row items-center justify-center'>
                   <Image source={google} className='size-6' resizeMode='contain' />
                   <Text className='text-lg font-rubik-medium text-black-300 ml-2'>Continue with Google</Text>
