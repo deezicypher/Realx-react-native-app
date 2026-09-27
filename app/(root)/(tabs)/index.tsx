@@ -1,7 +1,13 @@
-import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { useAuth } from "@/context/AuthContext";
+import { Link, Redirect } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 
 export default function Index() {
+  const {user,logout} = useAuth()
+
+    if (!user) {
+    return <Redirect href="/sign-in" />;
+  }
   return (
     <View
       style={{
@@ -24,6 +30,11 @@ export default function Index() {
   <Text>Property</Text>
 </Link>
 
+<Pressable onPress={logout} className="bg-red-800 px-6 py-2 mt-10 rounded-md">
+      <Text className="text-white">
+        Logout
+        </Text>
+</Pressable>
     </View>
   );
 }

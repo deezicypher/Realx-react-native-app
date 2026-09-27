@@ -1,7 +1,7 @@
 import { getAccessToken } from '@/libs/auth-storage';
 import axios from 'axios';
 const instance = axios.create({
-    baseURL: "http://192.168.1.182:3000",
+    baseURL: process.env.EXPO_PUBLIC_API_URL,
     withCredentials: true, 
 });
 

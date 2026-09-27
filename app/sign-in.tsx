@@ -4,11 +4,12 @@ import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import instance from '@/services/api';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
   
 const Signin = () => {
+  const {user} = useAuth();
 
   const router = useRouter();
 
@@ -49,7 +50,7 @@ const Signin = () => {
       await refreshUser()
 
      // Navigate to the main Realx app.
-      router.push('/(root)/(tabs)/profile')
+      // router.push('/(root)/(tabs)/profile')
 
 
     } catch (error:any) {
@@ -69,6 +70,9 @@ const Signin = () => {
     };
 
 
+  if (user) {
+    return <Redirect href="/(root)/(tabs)" />;
+  }
 
 
   return (
