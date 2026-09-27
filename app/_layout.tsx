@@ -20,11 +20,11 @@ export default function RootLayout() {
    
         SplashScreen.hideAsync()
       }
-  },[])
+  }, [fontsLoaded])
   if(!fontsLoaded) return null
   return (
     <SafeAreaProvider>
-  <Stack screenOptions={{headerShown:false}} />;
+  <Stack screenOptions={{headerShown:false}} />
   </SafeAreaProvider>
   )
 }

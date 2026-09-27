@@ -8,7 +8,6 @@
     "scheme": "realx",
     "owner": "deezi",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.deezi.realestate",
       "supportsTablet": true
@@ -21,7 +20,6 @@
         "backgroundImage": "./assets/images/icon.png",
         "monochromeImage": "./assets/images/icon.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -32,6 +30,13 @@
     "plugins": [
       "expo-router",
       [
+        "@react-native-google-signin/google-signin",
+       {
+          "iosUrlScheme": "com.googleusercontent.apps.1009722963789-gavcn788rm2pmlvjgc8obgdr1kn5qif2"
+        }
+      ],
+      [
+        
         "expo-splash-screen",
         {
           "image": "./assets/images/icon.png",
@@ -56,7 +61,9 @@
           ]
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-image",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

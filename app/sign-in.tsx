@@ -1,58 +1,75 @@
 import { google, onboarding } from '@/constants/images';
+import { GoogleSignin } from '@/libs/google-auth';
 import { instance } from '@/services/api';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import React, { useEffect } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { statusCodes } from '@react-native-google-signin/google-signin';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-WebBrowser.maybeCompleteAuthSession()
-
+  
 const Signin = () => {
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
-  });
 
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      if (authentication?.accessToken) {
-        sendTokenToApi(authentication.accessToken);
-      }
-      console.log("✅ Logged in!", authentication?.accessToken);
-    }
-    if (response?.type === "error") {
-      console.log("Auth error:", response.error);
-      Alert.alert('Authentication Error', response.error?.toString() || 'Unknown error occurred');
-    }
-    if (response?.type === "cancel") {
-      console.log("Auth cancelled by user");
-    }
-  }, [response]);
+  const {height} = useWindowDimensions();
 
-  const sendTokenToApi = async (accessToken: string) => {
+  const signInWithGoogle = async () => {
     try {
-      const res = await instance.post('google/signup', {
-        access_token: accessToken,
+      // Make sure Google Play Services are available.
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
       });
 
-      const user = res.data.user;
-      Alert.alert('Welcome', `${user.name} (${user.email})`);
-      // Store user/token, navigate, etc.
-    } catch (err) {
-      console.error('API Error:', err);
-      Alert.alert('Login failed', 'Could not log in with Google');
-    }
-  };
- 
+      await GoogleSignin.signOut();
+
+      // Open the native Google Sign-In flow.
+      const response = await GoogleSignin.signIn();
+
+      if (response.type !== "success") { 
+        console.log("Google Sign-In cancelled"); 
+        return; 
+      } 
+   
+      const { user, idToken } = response.data;
+      
+
+      console.log("✅ Google user:", user); 
+      console.log("✅ Google ID token:", idToken);
+
+      if (!idToken) { 
+        Alert.alert( "Login failed", "Google did not return an ID token. Please try again." ); 
+        return; 
+      }
+
+      // Send the Google ID token to your backend.
+      const res = await instance.post("auth/google", { idToken }); 
+      const backendUser = res.data.user; 
+      Alert.alert( "Welcome", `${backendUser.name} (${backendUser.email})` );
+
+      // TODO: 
+      // Store your backend token/session.
+     // Navigate to the main Realx app.
+
+    } catch (error:any) {
+      console.error("❌ Google Sign-In Error:", error);
+       if (error?.code === statusCodes.IN_PROGRESS) { 
+        console.log("Google Sign-In is already in progress."); 
+        return; 
+      } if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          Alert.alert(
+            "Google Play Services Required",
+            "Please update or enable Google Play Services and try again."
+           ); 
+          return; 
+        } 
+        Alert.alert( "Google Login Failed", error?.message || "Something went wrong while signing in with Google." ); 
+      }
+    };
+
+
+
 
   return (
     <SafeAreaView className='bg-white h-full'>
-      <ScrollView contentContainerClassName="h-full">
-        <Image source={onboarding} className='w-full h-4/6' resizeMode='cover' />
+      <ScrollView contentContainerClassName="pb-8" showsVerticalScrollIndicator={false}>
+        <Image source={onboarding} style={{ height: height * (1/ 2) }} className='w-full ' resizeMode='cover' />
         <View className="px-5 mt-5">
             <Text className="text-base text-center uppercase font-rubik text-black-200">
               Welcome to Realx
@@ -64,7 +81,7 @@ const Signin = () => {
               Login to Realx with Google
             </Text>
 
-            <TouchableOpacity disabled={!request} onPress={() => promptAsync()}  className='bg-white shadow-md shadow-zinc-300 mb-5 rounded-full w-full py-4 mt-5'>
+            <TouchableOpacity onPress={signInWithGoogle}  className='bg-white shadow-md shadow-zinc-300 mb-5 rounded-full w-full py-4 mt-5 border border-gray-400'>
                 <View className='flex flex-row items-center justify-center'>
                   <Image source={google} className='size-6' resizeMode='contain' />
                   <Text className='text-lg font-rubik-medium text-black-300 ml-2'>Continue with Google</Text>
