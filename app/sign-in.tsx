@@ -1,12 +1,18 @@
 import { google, onboarding } from '@/constants/images';
+import { useAuth } from '@/context/AuthContext';
+import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
-import { instance } from '@/services/api';
+import instance from '@/services/api';
 import { statusCodes } from '@react-native-google-signin/google-signin';
+import { useRouter } from 'expo-router';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
   
 const Signin = () => {
 
+  const router = useRouter();
+
+  const {refreshUser} = useAuth();
 
   const {height} = useWindowDimensions();
 
@@ -27,11 +33,8 @@ const Signin = () => {
         return; 
       } 
    
-      const { user, idToken } = response.data;
+      const {  idToken } = response.data;
       
-
-      console.log("✅ Google user:", user); 
-      console.log("✅ Google ID token:", idToken);
 
       if (!idToken) { 
         Alert.alert( "Login failed", "Google did not return an ID token. Please try again." ); 
@@ -40,12 +43,14 @@ const Signin = () => {
 
       // Send the Google ID token to your backend.
       const res = await instance.post("auth/google", { idToken }); 
-      const backendUser = res.data.user; 
-      Alert.alert( "Welcome", `${backendUser.name} (${backendUser.email})` );
-
-      // TODO: 
+  
       // Store your backend token/session.
+      await saveAccessToken(res.data.accessToken);
+      await refreshUser()
+
      // Navigate to the main Realx app.
+      router.push('/(root)/(tabs)/profile')
+
 
     } catch (error:any) {
       console.error("❌ Google Sign-In Error:", error);

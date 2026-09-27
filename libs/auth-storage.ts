@@ -1,0 +1,17 @@
+// lib/auth-storage.ts
+
+import * as SecureStore from 'expo-secure-store';
+
+const ACCESS_TOKEN_KEY = 'ginchi';
+
+export async function saveAccessToken(token: string) {
+  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
+}
+
+export async function getAccessToken() {
+  return SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+}
+
+export async function removeAccessToken() {
+  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+}
