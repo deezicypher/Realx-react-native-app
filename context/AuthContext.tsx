@@ -1,0 +1,98 @@
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
+
+import { getAccessToken, removeAccessToken } from '@/libs/auth-storage';
+import instance from '@/services/api';
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  photo: string | null;
+};
+
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
+  logout: () => Promise<void>;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
+
+export function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refreshUser = async () => {
+    try {
+      const token = await getAccessToken();
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const response = await instance.get('/auth/profile');
+
+      setUser(response.data);
+    } catch (error) {
+      console.error('❌ Failed to restore session:', error);
+
+      await removeAccessToken();
+      setUser(null);
+    }
+  };
+
+  const logout = async () => {
+    await removeAccessToken();
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        await refreshUser();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        refreshUser,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      'useAuth must be used inside AuthProvider',
+    );
+  }
+
+  return context;
+}
