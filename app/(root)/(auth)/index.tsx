@@ -8,7 +8,7 @@ import { Redirect, useRouter } from 'expo-router';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
   
-const Signin = () => {
+const AuthHome = () => {
   const {user} = useAuth();
 
   const router = useRouter();
@@ -83,23 +83,50 @@ const Signin = () => {
             <Text className="text-base text-center uppercase font-rubik text-black-200">
               Welcome to Realx
             </Text>
-            <Text className='font-rubik-bold text-3xl mt-2 text-black-300 text-center'>
-              Let's Get You Closer To {"\n"} <Text className='text-primary-300'>Your Idea Home</Text>
+            <Text className="font-rubik-bold text-3xl text-black-300 text-center mt-2">
+            Find a place you'll
+            {'\n'}
+            <Text className="text-primary-300">
+              love to call home.
             </Text>
-            <Text className='text-lg font-rubik text-center mt-12 text-black-200'>
-              Login to Realx with Google
             </Text>
+          <Text className="font-rubik text-base text-black-200 text-center mt-4">
+            Discover beautiful homes, explore properties,
+            and find the perfect place for your next chapter.
+          </Text>
 
+          <TouchableOpacity
+            onPress={() => router.push('/(root)/(auth)/sign-in')}
+            className="h-14 rounded-2xl bg-primary-300 items-center justify-center mt-8"
+          >
+            <Text className="font-rubik-semibold text-base text-white">
+              Sign In
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/(root)/(auth)/sign-up')}
+            className="h-14 rounded-2xl border border-gray-200 items-center justify-center mt-4"
+          >
+            <Text className="font-rubik-semibold text-base text-black-300">
+              Create an Account
+            </Text>
+          </TouchableOpacity>
+
+   
             <TouchableOpacity onPress={signInWithGoogle}  className='bg-white shadow-md shadow-zinc-300 mb-5 rounded-full w-full py-4 mt-5 border border-gray-400'>
                 <View className='flex flex-row items-center justify-center'>
                   <Image source={google} className='size-6' resizeMode='contain' />
                   <Text className='text-lg font-rubik-medium text-black-300 ml-2'>Continue with Google</Text>
                 </View>
             </TouchableOpacity>
+                   <Text className="font-rubik text-sm text-gray-400 text-center mt-6">
+            Your next home could be one search away.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
   )
 }
 
-export default Signin
+export default AuthHome

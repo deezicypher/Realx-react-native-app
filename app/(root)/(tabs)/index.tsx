@@ -6,7 +6,7 @@ export default function Index() {
   const {user,logout} = useAuth()
 
     if (!user) {
-    return <Redirect href="/sign-in" />;
+    return <Redirect href="/(root)/(auth)/index" />;
   }
   return (
     <View
