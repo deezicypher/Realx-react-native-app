@@ -8,7 +8,7 @@ import { SigninForm, signinSchema } from '@/schemas/auth.schema';
 import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
@@ -113,15 +113,13 @@ const Signin = () => {
     }
   };
 
-  if (user) {
-    return <Redirect href="/(root)/(tabs)" />;
-  }
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
 
       <KeyboardAwareScrollView
-        className="flex-1"
+        className="flex-1 bg-white"
         contentContainerStyle={{
           paddingBottom: 40
         }}

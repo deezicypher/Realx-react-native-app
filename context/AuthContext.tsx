@@ -1,8 +1,8 @@
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
 } from 'react';
 
 import { getAccessToken, removeAccessToken } from '@/libs/auth-storage';
@@ -16,6 +16,7 @@ type User = {
 };
 
 type AuthContextType = {
+  isLoggedIn: boolean;
   user: User | null;
   loading: boolean;
   refreshUser: () => Promise<void>;
@@ -59,6 +60,8 @@ export function AuthProvider({
     setUser(null);
   };
 
+  const isLoggedIn = !!user
+
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -78,6 +81,7 @@ export function AuthProvider({
         loading,
         refreshUser,
         logout,
+        isLoggedIn
       }}
     >
       {children}

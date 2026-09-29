@@ -4,7 +4,7 @@ import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import instance from '@/services/api';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
   
@@ -70,9 +70,7 @@ const AuthHome = () => {
     };
 
 
-  if (user) {
-    return <Redirect href="/(root)/(tabs)" />;
-  }
+
 
 
   return (

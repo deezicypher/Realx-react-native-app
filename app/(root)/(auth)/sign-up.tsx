@@ -11,7 +11,7 @@ import {
 import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
@@ -141,9 +141,7 @@ const Signup = () => {
     }
   };
 
-  if (user) {
-    return <Redirect href="/(root)/(tabs)" />;
-  }
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">
