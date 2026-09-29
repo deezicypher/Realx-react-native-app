@@ -47,25 +47,28 @@ const Signup = () => {
 
   const signupWithEmail = async (data: SignupForm) => {
     try {
-      const response = await instance.post('/auth/register', {
+      await instance.post('/auth/register', {
         name: data.name.trim(),
         email: data.email.toLowerCase(),
         password: data.password,
       });
+      
 
-      Alert.alert(
-        'Account Created 🎉',
-        response.data?.msg ||
-          'Please check your email to activate your account.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => {
-              router.replace('/(root)/(auth)/sign-in');
-            },
-          },
-        ],
-      );
+      router.replace('/(root)/(auth)/verifyEmail')
+
+      // Alert.alert(
+      //   'Account Created 🎉',
+      //   response.data?.msg ||
+      //     'Please check your email to activate your account.',
+      //   [
+      //     {
+      //       text: 'Continue',
+      //       onPress: () => {
+      //         router.replace('/(root)/(auth)/sign-in');
+      //       },
+      //     },
+      //   ],
+      // );
     } catch (error: any) {
       console.error('❌ Signup Error:', error);
 
