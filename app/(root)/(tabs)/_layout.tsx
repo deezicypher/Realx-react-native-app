@@ -1,19 +1,25 @@
 import icons from '@/constants/icons'
-import { Tabs } from 'expo-router'
+import { useAuth } from '@/context/AuthContext'
+import { Redirect, Tabs } from 'expo-router'
 import { Image, Text, View } from 'react-native'
 
 
 const TabIcon = ({focused, icon, title}:{focused:boolean,icon:any,title:string}) => (
         <View className='flex-1 mt-3 flex flex-col items-center'>
             <Image  source={icon} tintColor={focused ? '#0061ff' : '#666876'}
-            resizeMode='contain' className='size-8 text-black-300' />
+            resizeMode='contain' className='size-6 text-black-300' />
             <Text className={`${focused ? 'text-primary-300 font-rubik-medium': 'text-black-200 font-rubik'} text-xs w-full text-center mt-1`}>
                 {title}
             </Text>
         </View>     
 )
 const TabLayout = () => {
+    const {user} = useAuth();
 
+    if (!user) {
+        return <Redirect href="/(root)/(auth)" />;
+    }
+    
   return (
     <Tabs
         screenOptions={{
