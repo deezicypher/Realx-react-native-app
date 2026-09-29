@@ -32,7 +32,7 @@ import swim from "@/assets/icons/swim.png";
 import wallet from "@/assets/icons/wallet.png";
 import wifi from "@/assets/icons/wifi.png";
 
-export const icons = {
+export default {
   google,
   home,
   search,
