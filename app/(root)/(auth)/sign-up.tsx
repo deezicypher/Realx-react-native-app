@@ -90,6 +90,8 @@ const Signup = () => {
         showPlayServicesUpdateDialog: true,
       });
 
+      await GoogleSignin.signOut()
+
       const response = await GoogleSignin.signIn();
 
       if (response.type !== 'success') {
@@ -144,7 +146,9 @@ const Signup = () => {
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAwareScrollView
         className="flex-1"
-        contentContainerClassName="pb-10"
+        contentContainerStyle={{
+          paddingBottom: 40
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         enableOnAndroid
