@@ -5,8 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import {
-    SignupForm,
-    signupSchema,
+  SignupForm,
+  signupSchema,
 } from '@/schemas/auth.schema';
 import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,15 +14,15 @@ import { statusCodes } from '@react-native-google-signin/google-signin';
 import { Redirect, useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Signup = () => {
@@ -142,10 +142,14 @@ const Signup = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
+      <KeyboardAwareScrollView
+        className="flex-1"
         contentContainerClassName="pb-10"
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        enableOnAndroid
+        extraScrollHeight={100}
+        extraHeight={100}
       >
         <Image
           source={onboarding}
@@ -333,7 +337,7 @@ const Signup = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

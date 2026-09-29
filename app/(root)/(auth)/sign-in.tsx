@@ -14,12 +14,12 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Signin = () => {
@@ -117,10 +117,15 @@ const Signin = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView
-        showsVerticalScrollIndicator={false}
+
+      <KeyboardAwareScrollView
+        className="flex-1"
         contentContainerClassName="pb-10"
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        enableOnAndroid
+        extraScrollHeight={100}
+        extraHeight={100}
       >
         <Image
           source={onboarding}
@@ -249,7 +254,8 @@ const Signin = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
+
     </SafeAreaView>
   );
 };
