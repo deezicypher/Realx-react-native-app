@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 const SettingsItem = ({icon,title, onPress, textStyle, showArrow=true}
   :{icon:ImageSourcePropType, title:string, onPress?:()=>void, textStyle?:string, showArrow?:boolean}
 ) => (
-  <TouchableOpacity className='flex flex-row items-center justify-between py-3'>
+  <TouchableOpacity onPress={onPress} className='flex flex-row items-center justify-between py-3'>
     <View className='flex flex-row items-center gap-3'>
       <Image source={icon} className='size-6'/>
       <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`}>

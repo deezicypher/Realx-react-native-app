@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   createContext,
   useContext,
@@ -47,10 +48,21 @@ export function AuthProvider({
       const response = await instance.get('/auth/profile');
 
       setUser(response.data);
-    } catch (error) {
-      console.error('❌ Failed to restore session:', error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error('Failed to restore session:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+        });
 
-      await removeAccessToken();
+      
+        await removeAccessToken();
+        
+      } else {
+        console.error('Failed to restore session:', error);
+      }
+
       setUser(null);
     }
   };

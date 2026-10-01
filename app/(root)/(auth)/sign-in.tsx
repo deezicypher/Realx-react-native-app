@@ -1,6 +1,6 @@
 import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
-import { google, onboarding } from '@/constants/images';
+import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
 import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
@@ -49,7 +49,7 @@ const Signin = () => {
       await saveAccessToken(response.data.accessToken);
       await refreshUser();
     } catch (error: any) {
-      console.error('❌ Email Login Error:', error);
+      console.error('❌ Email Login Error:', error.message);
 
       const message =
         error?.response?.data?.message ||
@@ -90,7 +90,7 @@ const Signin = () => {
       await saveAccessToken(res.data.accessToken);
       await refreshUser();
     } catch (error: any) {
-      console.error('❌ Google Sign-In Error:', error);
+      console.error('❌ Google Sign-In Error:', error.message);
 
       if (error?.code === statusCodes.IN_PROGRESS) {
         return;
@@ -130,7 +130,7 @@ const Signin = () => {
         extraHeight={100}
       >
         <Image
-          source={onboarding}
+          source={images.onboarding}
           style={{ height: height * 0.40 }}
           className="w-full"
           resizeMode="cover"
@@ -228,7 +228,7 @@ const Signin = () => {
           >
             <View className="flex-row items-center">
               <Image
-                source={google}
+                source={images.google}
                 className="size-5"
                 resizeMode="contain"
               />

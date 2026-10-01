@@ -1,6 +1,6 @@
 import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
-import { google, onboarding } from '@/constants/images';
+import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
 import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
@@ -157,7 +157,7 @@ const Signup = () => {
         extraHeight={100}
       >
         <Image
-          source={onboarding}
+          source={images.onboarding}
           style={{ height: height * 0.30 }}
           className="w-full"
           resizeMode="cover"
@@ -314,7 +314,7 @@ const Signup = () => {
           >
             <View className="flex-row items-center">
               <Image
-                source={google}
+                source={images.google}
                 className="size-5"
                 resizeMode="contain"
               />

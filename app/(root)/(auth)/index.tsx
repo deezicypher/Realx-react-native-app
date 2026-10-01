@@ -1,4 +1,4 @@
-import { google, onboarding } from '@/constants/images';
+import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
 import { saveAccessToken } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
@@ -76,7 +76,7 @@ const AuthHome = () => {
   return (
     <SafeAreaView className='bg-white h-full'>
       <ScrollView contentContainerClassName="pb-8" showsVerticalScrollIndicator={false}>
-        <Image source={onboarding} style={{ height: height * (1/ 2) }} className='w-full ' resizeMode='cover' />
+        <Image source={images.onboarding} style={{ height: height * (1/ 2) }} className='w-full ' resizeMode='cover' />
         <View className="px-5 mt-5">
             <Text className="text-base text-center uppercase font-rubik text-black-200">
               Welcome to Realx
@@ -114,7 +114,7 @@ const AuthHome = () => {
    
             <TouchableOpacity onPress={signInWithGoogle}  className='bg-white shadow-md shadow-zinc-300 mb-5 rounded-full w-full py-4 mt-5 border border-gray-400'>
                 <View className='flex flex-row items-center justify-center'>
-                  <Image source={google} className='size-6' resizeMode='contain' />
+                  <Image source={images.google} className='size-6' resizeMode='contain' />
                   <Text className='text-lg font-rubik-medium text-black-300 ml-2'>Continue with Google</Text>
                 </View>
             </TouchableOpacity>
