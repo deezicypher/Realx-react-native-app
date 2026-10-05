@@ -1,5 +1,6 @@
 import { Card, FeaturedCard } from "@/components/Cards";
 import Filter from "@/components/Filter";
+import NoResult from "@/components/NoResult";
 import Search from "@/components/Search";
 import icons from "@/constants/icons";
 import images from "@/constants/images";
@@ -7,7 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import instance from '@/services/api';
 import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { useEffect } from "react";
+import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -21,7 +23,8 @@ export default function Index() {
   const {data: latestProperties,isLoading: latestPropertiesLoading} = useQuery({ queryKey: ['latest-properties'], queryFn: getLatestProperties })
   
   const getProperties = async () => {
-    const res = await instance.get(`/properties?query=${params.query},limit=6,filter=${params.filter}`);
+    
+    const res = await instance.get(`/properties/search?query=${params.query}&limit=6&filter=${params.filter}`);
     return res.data;
   }
 
@@ -31,6 +34,11 @@ export default function Index() {
   const handleCardPress = (id:string) => {
     router.push(`/properties/${id}`)
   }
+
+  useEffect(() => {
+    console.log('Params changed:', params);
+    refetch()
+  }, [params.query, params.filter])
   
 
   return (
@@ -43,6 +51,13 @@ export default function Index() {
       contentContainerClassName="pb-32" 
       columnWrapperClassName="flex gap-5 px-5"
       showsVerticalScrollIndicator={false}
+      ListEmptyComponent={
+        isLoading? <ActivityIndicator size="large" className="text-primary-300"/>
+        :
+        <NoResult/>
+      }
+      onRefresh={refetch}
+      refreshing={isLoading}
       ListHeaderComponent={
         <View className="px-5">
                   <View className="flex flex-row items-center justify-between">
@@ -70,6 +85,10 @@ export default function Index() {
           <Text className="text-base font-rubik-bold text-primary-300" >See All</Text>
         </TouchableOpacity>
       </View>
+      {
+      latestPropertiesLoading? <ActivityIndicator size="large" className="text-primary-300 mt-5"/>
+      : !latestProperties || latestProperties.length === 0 ? <NoResult/>
+      : (
       <FlatList data={latestProperties}
         renderItem={({item}) => <FeaturedCard item={item} onPress={() => handleCardPress(item.id)}/>}
         keyExtractor={(item) => item.id}
@@ -78,6 +97,8 @@ export default function Index() {
         showsHorizontalScrollIndicator={false}
         contentContainerClassName="flex gap-5 mt-5"
         />
+      )
+    }
 
      </View>
 
