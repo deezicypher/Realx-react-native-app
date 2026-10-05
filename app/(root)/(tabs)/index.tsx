@@ -36,7 +36,6 @@ export default function Index() {
   }
 
   useEffect(() => {
-    console.log('Params changed:', params);
     refetch()
   }, [params.query, params.filter])
   
