@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/context/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -24,12 +25,15 @@ export default function RootLayout() {
   }, [fontsLoaded])
   if(!fontsLoaded) return null
 
-  
+  const queryClient = new QueryClient()
+
   return (
     <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Stack screenOptions={{headerShown:false}} />
       </AuthProvider>
+      </QueryClientProvider>
   </SafeAreaProvider>
 
   )
