@@ -1,4 +1,5 @@
 import icons from '@/constants/icons';
+import { formatCurrency } from '@/services/formatter';
 import { PropertyRecord } from '@/types/property';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
@@ -33,7 +34,7 @@ export const FeaturedCard  = ({onPress, item}: Props) => {
 
             <View className='flex flex-row items-center justify-between w-full'>
                 <Text className='text-xl font-rubik-extrabold text-white'>
-                    ${item.price.toLocaleString()}
+                    {formatCurrency(item.price)}
                 </Text>
                 <Image source={icons.heart} className='size-5' />
             </View>
@@ -64,7 +65,7 @@ export const Card = ({onPress,item:{image, name, price, rating,address}}:Props) 
 
             <View className='flex flex-row items-center justify-between mt-2'>
                 <Text className='text-base font-rubik-bold text-primary-300'>
-                    ${price.toLocaleString()}
+                    {formatCurrency(price)}
                 </Text>
                 <Image source={icons.heart} className='size-5 mr-2' tintColor="#191d31" />
             </View>

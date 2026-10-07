@@ -3,6 +3,7 @@ import { facilities } from '@/constants/data'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
 import instance from '@/services/api'
+import { formatCurrency } from '@/services/formatter'
 import { useQuery } from '@tanstack/react-query'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
@@ -225,6 +226,23 @@ const Property = () => {
           </TouchableOpacity>
           </View>
           <Comment item={property?.reviews[0]} />
+        </View>
+
+        <View className='flex flex-row items-center justify-between gap-5 mt-10'>
+          <View className='flex flex-col justify-between'>
+            <Text className='text-black-200 text-sm font-rubik-medium'>
+              Price
+            </Text>
+            <Text numberOfLines={1} className='text-primary-300 text-2xl font-rubik-bold'>
+              {formatCurrency(property?.price)}
+            </Text>
+          </View>
+
+          <TouchableOpacity className='flex-1  bg-primary-300 py-3 rounded-full shadow-md shadow-zinc-400'>
+              <Text className='text-white text-lg text-center font-rubik-bold'>
+                Book Now
+              </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
