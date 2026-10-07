@@ -1,8 +1,11 @@
 import icons from '@/constants/icons'
+import { components } from '@/constants/theme'
 import { useAuth } from '@/context/AuthContext'
 import { Redirect, Tabs } from 'expo-router'
 import { Image, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
+const tabBar = components.tabBar
 
 const TabIcon = ({focused, icon, title}:{focused:boolean,icon:any,title:string}) => (
         <View className='flex-1 mt-3 flex flex-col items-center'>
@@ -14,6 +17,7 @@ const TabIcon = ({focused, icon, title}:{focused:boolean,icon:any,title:string})
         </View>     
 )
 const TabLayout = () => {
+    const insets = useSafeAreaInsets()
     const {user} = useAuth();
 
     if (!user) {
@@ -28,9 +32,18 @@ const TabLayout = () => {
                 backgroundColor: 'white',
                 position:"absolute",
                 borderTopColor: '#0061FF1A',
-                borderTopWidth:1,
-                minHeight: 70,
-                marginBottom:20
+                borderTopWidth:0,
+                height: tabBar.height,
+                bottom: Math.max(insets.bottom, tabBar.horizontalInset),
+                //marginHorizontal: tabBar.horizontalInset,
+            },
+            tabBarItemStyle: {
+                paddingVertical: tabBar.height / 2 - tabBar.iconFrame / 1.6,
+            },
+            tabBarIconStyle: {
+                width: tabBar.iconFrame,
+                height: tabBar.iconFrame,
+                alignItems: 'center',
             }
         }}
         >
