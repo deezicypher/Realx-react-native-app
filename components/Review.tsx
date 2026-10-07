@@ -27,7 +27,7 @@ const Review = ({item}:ReviewProps) => {
                     </Text>
                 </View>
                 <Text className="text-black-100 text-sm font-rubik">
-                {new Date(item.createdAt).toDateString()}
+                {new Date(item?.createdAt).toDateString()}
                 </Text>
             </View>
           </View>
