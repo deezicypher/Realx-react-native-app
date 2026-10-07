@@ -1,5 +1,7 @@
+import Comment from '@/components/Review'
 import { facilities } from '@/constants/data'
 import icons from '@/constants/icons'
+import images from '@/constants/images'
 import instance from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -13,12 +15,31 @@ const Property = () => {
 
     const {data:property} = useQuery({queryKey:['property',id], queryFn: async () => {
         const res = await instance.get(`/properties/${id}`)
+        console.log(res.data)
         return res.data
     }})
 
     const viewImage = (image: string) => {
       setSelectedImage(image)
     }
+
+    const location = (() => {
+      const geolocation = property?.geolocation
+      if (typeof geolocation !== 'string') return null
+
+      const [latitude, longitude] = geolocation
+        .split(',')
+        .map((value) => Number(value.trim()))
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
+
+      return {
+        latitude,
+        longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }
+    })()
 
 
   return (
@@ -117,7 +138,7 @@ const Property = () => {
 
             {property?.facilities.length > 0 && (
               <View className='flex flex-row flex-wrap items-start justify-start gap-5'>
-                {property.facilities?.map((item:string, index:number) => {
+                {property?.facilities.map((item:string, index:number) => {
                   const facility = facilities.find(f => f.title = item)
                   return (
                     <View key={index} className='flex flex-1 flex-col items-center min-w-16 max-w-20'>
@@ -137,14 +158,14 @@ const Property = () => {
             )}
           </View>
 
-        {property?.galleries.length > 0 && (
+        {property?.galleries?.length > 0 && (
           <View className='flex flex-col gap-5 mt-5'>
             <Text className='text-xl font-rubik-bold text-black-300'>Gallery</Text>
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
               data={property?.galleries}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.$id}
               contentContainerClassName='flex gap-4 mt-4'
               contentContainerStyle={{paddingRight:20}}
               renderItem={({item}) => (
@@ -154,10 +175,58 @@ const Property = () => {
               )}
               />
           </View>
-          )
-          }
-          
+        ) }
+
+        
+        <View className='flex flex-col gap-5 mt-5'>
+          <Text className='text-xl font-rubik-bold text-black-300'>Location</Text>
+          <View className='flex flex-row items-center justify-start gap-2'>
+            <Image source={icons.location} className='size-7'/>
+            <Text className='text-black-200 font-rubik-medium text-sm'>
+              {property?.address}
+            </Text> 
+          </View>
+            <Image
+              source={images.map}
+              className="h-52 w-full mt-5 rounded-xl"
+            />
+{/* 
+          {location ? (
+            <MapView
+              style={{ height: 220, width: '100%', borderRadius: 16 }}
+              initialRegion={location}
+              showsUserLocation={false}
+              showsTraffic={false}
+            >
+              <Marker
+                coordinate={location}
+                title={property?.name}
+                description={property?.address}
+              />
+            </MapView>
+          ) : (
+            <View className='h-24 items-center justify-center rounded-xl border border-primary-200 bg-primary-100'>
+              <Text className='text-sm font-rubik-medium text-black-200'>Location coordinates are unavailable.</Text>
+            </View>
+          )} */}
         </View>
+
+        <View className='flex flex-col gap-5'>
+          <View className='flex flex-row items-center justify-between mt-5'>
+            <View className='flex flex-row gap-2 items-center'>
+              <Image source={icons.star} className='size-6' />
+              <Text className='text-black-300 font-rubik-bold text-xl'>
+                  {property?.rating} ({property?.reviews.length} reviews)
+              </Text>
+            </View>
+
+          <TouchableOpacity>
+            <Text className="text-base font-rubik-bold text-primary-300" >View All</Text>
+          </TouchableOpacity>
+          </View>
+          <Comment item={property?.reviews[0]} />
+        </View>
+      </View>
     </ScrollView>
 
     <Modal
@@ -176,7 +245,7 @@ const Property = () => {
           className="w-full h-full"
           resizeMode="contain"
           accessibilityLabel="Full-sized property image"
-        />
+        /> 
       </TouchableOpacity>
     </Modal>
     </>
