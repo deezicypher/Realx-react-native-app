@@ -55,10 +55,6 @@ export function AuthProvider({
           data: error.response?.data,
           message: error.message,
         });
-
-      
-        await removeTokens();
-        
       } else {
         console.error('Failed to restore session:', error);
       }
