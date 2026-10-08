@@ -16,7 +16,6 @@ const Property = () => {
 
     const {data:property} = useQuery({queryKey:['property',id], queryFn: async () => {
         const res = await instance.get(`/properties/${id}`)
-        console.log(res.data)
         return res.data
     }})
 
@@ -233,7 +232,7 @@ const Property = () => {
               })
             }}
           >
-            <Text className="text-base font-rubik-bold text-primary-300">View All</Text>
+              <Text className="text-base font-rubik-bold text-primary-300">View All</Text>
           </TouchableOpacity>
           </View>
           <Review item={property?.reviews?.[0]} />
