@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 
-import { getAccessToken, removeAccessToken } from '@/libs/auth-storage';
+import { getAccessToken, getRefreshToken, removeTokens } from '@/libs/auth-storage';
 import instance from '@/services/api';
 
 type User = {
@@ -57,7 +57,7 @@ export function AuthProvider({
         });
 
       
-        await removeAccessToken();
+        await removeTokens();
         
       } else {
         console.error('Failed to restore session:', error);
@@ -68,8 +68,21 @@ export function AuthProvider({
   };
 
   const logout = async () => {
-    await removeAccessToken();
-    setUser(null);
+    const refreshToken = await getRefreshToken();
+
+    try {
+      if(refreshToken){
+        await instance.post('auth/logout', {
+          refreshToken
+        })
+      }
+    } catch{
+      // clear local credentials, even if server logout fails
+    } finally {
+      await removeTokens();
+      setUser(null);
+    }
+
   };
 
   const isLoggedIn = !!user

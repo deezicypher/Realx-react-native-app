@@ -2,7 +2,7 @@ import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
 import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
-import { saveAccessToken } from '@/libs/auth-storage';
+import { saveTokens } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import { SigninForm, signinSchema } from '@/schemas/auth.schema';
 import instance from '@/services/api';
@@ -46,7 +46,10 @@ const Signin = () => {
         password: data.password,
       });
 
-      await saveAccessToken(response.data.accessToken);
+      const {accessToken,refreshToken} = response.data
+
+      await saveTokens(accessToken, refreshToken);
+
       await refreshUser();
     } catch (error: any) {
       console.error('❌ Email Login Error:', error.message);
@@ -86,8 +89,10 @@ const Signin = () => {
       const res = await instance.post('/auth/google', {
         idToken,
       });
+      const {accessToken, refreshToken} = res.data
 
-      await saveAccessToken(res.data.accessToken);
+      await saveTokens(accessToken, refreshToken);
+      
       await refreshUser();
     } catch (error: any) {
       console.error('❌ Google Sign-In Error:', error.message);

@@ -1,4 +1,4 @@
-import Comment from '@/components/Review'
+import Review from '@/components/Review'
 import { facilities } from '@/constants/data'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
@@ -217,15 +217,26 @@ const Property = () => {
             <View className='flex flex-row gap-2 items-center'>
               <Image source={icons.star} className='size-6' />
               <Text className='text-black-300 font-rubik-bold text-xl'>
-                  {property?.rating} ({property?.reviews.length} reviews)
+                  {property?.rating} ({property?.reviews?.length ?? 0} reviews)
               </Text>
             </View>
 
-          <TouchableOpacity>
-            <Text className="text-base font-rubik-bold text-primary-300" >View All</Text>
+          <TouchableOpacity
+            onPress={() => {
+              if (!property?.reviews?.length) return
+
+              router.push({
+                pathname: '/properties/reviews',
+                params: {
+                  reviews: JSON.stringify(property.reviews),
+                },
+              })
+            }}
+          >
+            <Text className="text-base font-rubik-bold text-primary-300">View All</Text>
           </TouchableOpacity>
           </View>
-          <Comment item={property?.reviews[0]} />
+          <Review item={property?.reviews?.[0]} />
         </View>
 
         <View className='flex flex-row items-center justify-between gap-5 mt-10'>

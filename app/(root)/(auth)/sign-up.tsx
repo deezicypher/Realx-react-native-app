@@ -2,7 +2,7 @@ import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
 import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
-import { saveAccessToken } from '@/libs/auth-storage';
+import { saveTokens } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import {
   SignupForm,
@@ -115,7 +115,9 @@ const Signup = () => {
         idToken,
       });
 
-      await saveAccessToken(res.data.accessToken);
+      const {accessToken, refreshToken} = res.data
+      await saveTokens(accessToken, refreshToken);
+
       await refreshUser();
     } catch (error: any) {
       console.error('❌ Google Signup Error:', error);

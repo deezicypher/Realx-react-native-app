@@ -1,6 +1,6 @@
 import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
-import { saveAccessToken } from '@/libs/auth-storage';
+import { saveTokens } from '@/libs/auth-storage';
 import { GoogleSignin } from '@/libs/google-auth';
 import instance from '@/services/api';
 import { statusCodes } from '@react-native-google-signin/google-signin';
@@ -44,9 +44,12 @@ const AuthHome = () => {
 
       // Send the Google ID token to your backend.
       const res = await instance.post("auth/google", { idToken }); 
-  
+
+      const {accessToken, refreshToken} = res.data
+      
       // Store your backend token/session.
-      await saveAccessToken(res.data.accessToken);
+      await saveTokens(accessToken, refreshToken);
+      
       await refreshUser()
 
      // Navigate to the main Realx app.
