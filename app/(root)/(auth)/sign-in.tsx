@@ -47,7 +47,7 @@ const Signin = () => {
       });
 
       const {accessToken,refreshToken} = response.data
-      //console.log(response.data)
+
 
       await saveTokens(accessToken, refreshToken);
 

@@ -55,8 +55,8 @@ export default function Index() {
         :
         <NoResult/>
       }
-      onRefresh={refetch}
-      refreshing={isLoading}
+      // onRefresh={refetch}
+      // refreshing={isLoading}
       ListHeaderComponent={
         <View className="px-5">
                   <View className="flex flex-row items-center justify-between">

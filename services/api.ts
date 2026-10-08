@@ -94,21 +94,24 @@ instance.interceptors.response.use(
 );
 
 async function refreshAccessToken(): Promise<string> {
+ 
   const refreshToken = await getRefreshToken();
-
+  
   if (!refreshToken) {
     throw new Error('No refresh token available');
   }
-
+  
   const response = await refreshClient.post('/auth/refresh', {
     refreshToken,
   });
 
-
+ console.log(response.data)
   const {
     accessToken,
     refreshToken: newRefreshToken,
   } = response.data;
+
+  console.log(accessToken,newRefreshToken)
 
   if (!accessToken || !newRefreshToken) {
     throw new Error('Invalid refresh response');
