@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PropertyLayout = () => {
     const {isLoggedIn, loading} = useAuth()
+    
     if(!isLoggedIn){
          return <Redirect href="/(root)/(auth)" />;
     }

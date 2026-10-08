@@ -7,17 +7,21 @@ import { formatCurrency } from '@/services/formatter'
 import { useQuery } from '@tanstack/react-query'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
-import { Dimensions, FlatList, Image, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Dimensions, FlatList, Image, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 const Property = () => {
     const {id} = useLocalSearchParams()
     const windowHeight = Dimensions.get("window").height;
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
-    const {data:property} = useQuery({queryKey:['property',id], queryFn: async () => {
+    const {data:property, isLoading,error} = useQuery({queryKey:['property',id], queryFn: async () => {
         const res = await instance.get(`/properties/${id}`)
         return res.data
     }})
+
+    if(error){
+      console.log(error)
+    }
 
     const viewImage = (image: string) => {
       setSelectedImage(image)
@@ -42,6 +46,9 @@ const Property = () => {
     })()
 
 
+    if(isLoading){
+      return <ActivityIndicator className='flex flex-1 items-center justify-center text-primary-300' size="large" />
+    }
   return (
     <>
     <ScrollView

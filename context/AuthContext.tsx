@@ -8,6 +8,7 @@ import {
 
 import { getAccessToken, getRefreshToken, removeTokens } from '@/libs/auth-storage';
 import instance from '@/services/api';
+import { subscribeToAuthFailure } from '@/services/auth-events';
 
 type User = {
   id: string;
@@ -93,6 +94,12 @@ export function AuthProvider({
     };
 
     restoreSession();
+
+    const unsubscribe = subscribeToAuthFailure(() => {
+      setUser(null);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (

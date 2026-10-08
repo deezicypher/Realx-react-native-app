@@ -1,5 +1,7 @@
 import { getAccessToken, getRefreshToken, removeTokens, saveTokens } from '@/libs/auth-storage';
+import { notifyAuthFailure } from '@/services/auth-events';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+
 const instance = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_URL,
     withCredentials: true, 
@@ -82,6 +84,7 @@ instance.interceptors.response.use(
        * User needs to sign in again.
        */
       await removeTokens();
+      notifyAuthFailure();
 
       return Promise.reject(refreshError);
     } finally {
