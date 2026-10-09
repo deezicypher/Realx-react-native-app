@@ -1,3 +1,4 @@
+import AppErrorDialog from '@/components/ErrorDialog';
 import images from '@/constants/images';
 import { useAuth } from '@/context/AuthContext';
 import { saveTokens } from '@/libs/auth-storage';
@@ -5,17 +6,23 @@ import { GoogleSignin } from '@/libs/google-auth';
 import instance from '@/services/api';
 import { statusCodes } from '@react-native-google-signin/google-signin';
 import { useRouter } from 'expo-router';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
   
 const AuthHome = () => {
-  const {user} = useAuth();
 
   const router = useRouter();
 
   const {refreshUser} = useAuth();
 
   const {height} = useWindowDimensions();
+
+  const [errorDialog, setErrorDialog] = useState({
+    visible: false,
+    title: 'Signin Failed',
+    message: '',
+  });
 
   const signInWithGoogle = async () => {
     try {
@@ -38,7 +45,11 @@ const AuthHome = () => {
       
 
       if (!idToken) { 
-        Alert.alert( "Login failed", "Google did not return an ID token. Please try again." ); 
+        setErrorDialog({
+            visible: true,
+            title:"Login Failed",
+            message: "Google did not return an ID token. Please try again.",
+        });
         return; 
       }
 
@@ -62,13 +73,20 @@ const AuthHome = () => {
         console.log("Google Sign-In is already in progress."); 
         return; 
       } if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-          Alert.alert(
-            "Google Play Services Required",
-            "Please update or enable Google Play Services and try again."
-           ); 
+          setErrorDialog({
+            visible: true,
+            title: "Google Play Services Required",
+            message: "Please update or enable Google Play Services and try again.",
+          });
+
           return; 
         } 
-        Alert.alert( "Google Login Failed", error?.message || "Something went wrong while signing in with Google." ); 
+        setErrorDialog({
+            visible: true,
+            title:"Google Login Failed",
+            message: error?.message || "Something went wrong while signing in with Google.",
+        });
+   
       }
     };
 
@@ -77,6 +95,7 @@ const AuthHome = () => {
 
 
   return (
+    <>
     <SafeAreaView className='bg-white h-full'>
       <ScrollView contentContainerClassName="pb-8" showsVerticalScrollIndicator={false}>
         <Image source={images.onboarding} style={{ height: height * (1/ 2) }} className='w-full ' resizeMode='cover' />
@@ -127,6 +146,18 @@ const AuthHome = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+            <AppErrorDialog
+          visible={errorDialog.visible}
+          title={errorDialog.title}
+          message={errorDialog.message}
+          onClose={() =>
+            setErrorDialog((current) => ({
+              ...current,
+              visible: false,
+            }))
+          }
+        />
+        </>
   )
 }
 

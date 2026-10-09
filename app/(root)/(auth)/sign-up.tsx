@@ -1,3 +1,4 @@
+import AppErrorDialog from '@/components/ErrorDialog';
 import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
 import images from '@/constants/images';
@@ -12,10 +13,10 @@ import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   Text,
   TouchableOpacity,
@@ -29,6 +30,11 @@ const Signup = () => {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { height } = useWindowDimensions();
+  const [errorDialog, setErrorDialog] = useState({
+  visible: false,
+  title: 'Registration Failed',
+  message: '',
+});
 
   const {
     control,
@@ -80,10 +86,12 @@ const Signup = () => {
         ? message.join('\n')
         : message;
 
-      Alert.alert(
-        'Registration Failed',
-        readableMessage,
-      );
+      setErrorDialog({
+        visible: true,
+        title: 'Registration Failed',
+        message: readableMessage,
+      });
+
     }
   };
 
@@ -104,10 +112,12 @@ const Signup = () => {
       const { idToken } = response.data;
 
       if (!idToken) {
-        Alert.alert(
-          'Signup Failed',
-          'Google did not return an ID token. Please try again.',
-        );
+        setErrorDialog({
+          visible: true,
+          title: 'Signup Failed',
+          message: 'Please update or enable Google Play Services and try again.Google did not return an ID token. Please try again.',
+        });
+
         return;
       }
 
@@ -127,25 +137,28 @@ const Signup = () => {
       }
 
       if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(
-          'Google Play Services Required',
-          'Please update or enable Google Play Services and try again.',
-        );
+        setErrorDialog({
+          visible: true,
+          title: 'Google Play Services Required',
+          message: 'Please update or enable Google Play Services and try again.',
+        });
         return;
       }
 
-      Alert.alert(
-        'Google Signup Failed',
-        error?.response?.data?.message ||
+      setErrorDialog({
+        visible: true,
+        title: 'Google Signup Failed',
+        message: error?.response?.data?.message ||
           error?.message ||
           'Something went wrong while creating your account.',
-      );
+      });
     }
   };
 
 
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAwareScrollView
         className="flex-1"
@@ -346,6 +359,18 @@ const Signup = () => {
         </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>
+    <AppErrorDialog
+  visible={errorDialog.visible}
+  title={errorDialog.title}
+  message={errorDialog.message}
+  onClose={() =>
+    setErrorDialog((current) => ({
+      ...current,
+      visible: false,
+    }))
+  }
+/>
+</>
   );
 };
 

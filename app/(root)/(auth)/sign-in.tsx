@@ -1,3 +1,4 @@
+import AppErrorDialog from '@/components/ErrorDialog';
 import FormInput from '@/components/forms/FormInput';
 import PasswordInput from '@/components/forms/PasswordInput';
 import images from '@/constants/images';
@@ -9,6 +10,7 @@ import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
@@ -23,9 +25,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Signin = () => {
-  const { user, refreshUser } = useAuth();
+  const { refreshUser } = useAuth();
   const router = useRouter();
   const { height } = useWindowDimensions();
+  const [errorDialog, setErrorDialog] = useState({
+    visible: false,
+    title: 'Login Failed',
+    message: '',
+  });
 
   const {
     control,
@@ -58,8 +65,12 @@ const Signin = () => {
       const message =
         error?.response?.data?.message ||
         'Unable to sign in. Please check your credentials.';
-
-      Alert.alert('Sign In Failed', message);
+      setErrorDialog({
+          visible: true,
+          title: 'Sign In Failed',
+          message: message,
+        });
+     
     }
   };
 
@@ -80,10 +91,11 @@ const Signin = () => {
       const { idToken } = response.data;
 
       if (!idToken) {
-        Alert.alert(
-          'Login Failed',
-          'Google did not return an ID token. Please try again.',
-        );
+        setErrorDialog({
+          visible: true,
+          title: 'Login Failed',
+          message: 'Google did not return an ID token. Please try again.',
+        });
         return;
       }
 
@@ -103,10 +115,11 @@ const Signin = () => {
       }
 
       if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(
-          'Google Play Services Required',
-          'Please update or enable Google Play Services and try again.',
-        );
+        setErrorDialog({
+          visible: true,
+          title: 'Google Play Services Required',
+          message: 'Please update or enable Google Play Services and try again.',
+        });
         return;
       }
 
@@ -122,6 +135,7 @@ const Signin = () => {
 
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-white">
 
       <KeyboardAwareScrollView
@@ -265,7 +279,21 @@ const Signin = () => {
       </KeyboardAwareScrollView>
 
     </SafeAreaView>
+        <AppErrorDialog
+      visible={errorDialog.visible}
+      title={errorDialog.title}
+      message={errorDialog.message}
+      onClose={() =>
+        setErrorDialog((current) => ({
+          ...current,
+          visible: false,
+        }))
+      }
+    />
+    </>
   );
 };
 
 export default Signin;
+
+
