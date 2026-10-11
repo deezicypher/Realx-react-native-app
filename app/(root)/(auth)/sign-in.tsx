@@ -16,12 +16,12 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Signin = () => {
@@ -138,16 +138,12 @@ const Signin = () => {
     <>
     <SafeAreaView className="flex-1 bg-white">
 
-      <KeyboardAwareScrollView
-        className="flex-1 bg-white"
+      <ScrollView
         contentContainerStyle={{
           paddingBottom: 40
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        enableOnAndroid
-        extraScrollHeight={100}
-        extraHeight={100}
       >
         <Image
           source={images.onboarding}
@@ -205,7 +201,7 @@ const Signin = () => {
           {/* Forgot password */}
           <TouchableOpacity
             onPress={() => {
-              // Add forgot password route later
+             
             }}
             className="self-end mt-3"
           >
@@ -276,7 +272,7 @@ const Signin = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </ScrollView>
 
     </SafeAreaView>
         <AppErrorDialog

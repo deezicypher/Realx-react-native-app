@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { Redirect, Slot } from "expo-router";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AppLayout(){
@@ -18,5 +18,12 @@ export default function AppLayout(){
     )
 }
 
-return <Slot/>
+return (
+   <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Slot/>
+      </KeyboardAvoidingView>
+)
 }
