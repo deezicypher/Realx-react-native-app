@@ -9,6 +9,7 @@ import { SigninForm, signinSchema } from '@/schemas/auth.schema';
 import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -33,11 +34,12 @@ const Signin = () => {
     title: 'Login Failed',
     message: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SigninForm>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
@@ -46,12 +48,19 @@ const Signin = () => {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: async (data: SigninForm) => {
+      return instance.post('/auth/login', {
+        email: data.email.toLowerCase(),
+        password: data.password
+      })
+    }
+  })
+  
+  
   const signInWithEmail = async (data: SigninForm) => {
     try {
-      const response = await instance.post('/auth/login', {
-        email: data.email.toLowerCase(),
-        password: data.password,
-      });
+      const response =  await mutation.mutateAsync(data)
 
       const {accessToken,refreshToken} = response.data
 
@@ -75,6 +84,7 @@ const Signin = () => {
   };
 
   const signInWithGoogle = async () => {
+    setIsSubmitting(true)
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
@@ -129,6 +139,8 @@ const Signin = () => {
           error?.message ||
           'Something went wrong while signing in with Google.',
       );
+    } finally{
+      setIsSubmitting(false)
     }
   };
 
@@ -213,10 +225,10 @@ const Signin = () => {
           {/* Sign in */}
           <TouchableOpacity
             onPress={handleSubmit(signInWithEmail)}
-            disabled={isSubmitting}
+            disabled={mutation.isPending}
             className="h-14 rounded-2xl bg-primary-300 items-center justify-center mt-6"
           >
-            {isSubmitting ? (
+            {mutation.isPending ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="font-rubik-semibold text-base text-white">

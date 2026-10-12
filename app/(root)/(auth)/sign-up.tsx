@@ -12,6 +12,7 @@ import {
 import instance from '@/services/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { statusCodes } from '@react-native-google-signin/google-signin';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -35,11 +36,13 @@ const Signup = () => {
   title: 'Registration Failed',
   message: '',
 });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -51,13 +54,18 @@ const Signup = () => {
     },
   });
 
-  const signupWithEmail = async (data: SignupForm) => {
-    try {
-      await instance.post('/auth/register', {
+  const mutation = useMutation({
+    mutationFn: async (data:SignupForm) => {
+      return instance.post('/auth/register', {
         name: data.name.trim(),
         email: data.email.toLowerCase(),
         password: data.password,
       });
+    }
+  })
+  const signupWithEmail = async (data: SignupForm) => {
+    try {
+      await mutation.mutateAsync(data)
       
 
       router.replace('/(root)/(auth)/verifyEmail')
@@ -96,6 +104,7 @@ const Signup = () => {
   };
 
   const signUpWithGoogle = async () => {
+    setIsSubmitting(true)
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
@@ -152,6 +161,8 @@ const Signup = () => {
           error?.message ||
           'Something went wrong while creating your account.',
       });
+    }finally{
+      setIsSubmitting(false)
     }
   };
 
@@ -294,10 +305,10 @@ const Signup = () => {
           {/* Create account */}
           <TouchableOpacity
             onPress={handleSubmit(signupWithEmail)}
-            disabled={isSubmitting}
+            disabled={mutation.isPending}
             className="h-14 rounded-2xl bg-primary-300 items-center justify-center mt-6"
           >
-            {isSubmitting ? (
+            {mutation.isPending ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="font-rubik-semibold text-base text-white">
